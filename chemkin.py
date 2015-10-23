@@ -454,7 +454,7 @@ GFAC 1.0   ! Gas Reaction Rate Multiplier""")
         
         return input_stream      
     
-    def writeinputJSR(self,problemType, reactants, tau,endtime, volume, 
+    def writeInputJSR(self,problemType, reactants, tau,endtime, volume, 
                            temperature  = None, pressure  = None,
                            Continuations=False, typeContinuation = None, Tlist = [], Plist = [],                           
                            temperatureProfile = None, pressureProfile = None):
