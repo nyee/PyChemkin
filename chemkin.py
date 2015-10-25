@@ -202,7 +202,7 @@ class ChemkinJob(object):
     def writeInputHomogeneousBatch(self,problemType, reactants, temperature, pressure, endTime, 
                       Continuations=False, typeContinuation = None, Tlist = [], Plist = [],
                       variableVolume=False, variableVolumeProfile = None, 
-                      solverTimeStepProfile = None):
+                      solverTimeStepProfile = None, sensitivity=[], rop=[]):
         """
         Write input file for homogeneous batch reactor
         """
@@ -299,13 +299,21 @@ TIME {0:g}                 ! End Time (sec)""".format(endTime))
         input_stream+=("""
 ! 
 ! output control and other misc. property
-! 
+!""")
+
+        for species in sensitivity:
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+
+        input_stream+=("""
 EPSR 0.01   ! Threshold for Rate of Production
 EPSS 0.001   ! Threshold for Species Sensitivity
 EPST 0.001   ! Threshold for Temperature Sensitivity
 GFAC 1.0   ! Gas Reaction Rate Multiplier
 PRNT 1   ! Print Level Control
 SIZE 10000000   ! Solution Data Block Size (bytes)""")
+
+        for species in rop:
+            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
               
         if Continuations:
             if numpy.array(Tlist).size:                
@@ -329,7 +337,7 @@ PRES {1:g}""".format(typeContinuation,numpy.array(Plist)[i]/1.01325))
     def writeInputPlugFlow(self,problemType, reactants, 
                            startingAxialPosition, endingAxialPosition, diameter, momentum=True, massflowrate = None, sccmflowrate = None, 
                            temperature  = None, pressure  = None,  
-                           temperatureProfile = None, pressureProfile = None):
+                           temperatureProfile = None, pressureProfile = None, sensitivity=[], rop=[]):
     
         """
         Write input file for typical plug flow
@@ -443,12 +451,24 @@ RCHG 1.0E-6   ! Maximum Relative Change in Site Fractions
 RTLS 0.0001   ! Sensitivity Relative Tolerance
 RTOL 1.0E-6   ! Relative Tolerance
 TSTP 1.0   ! Initial Integration Step (cm""")          
-        
+
         input_stream+=("""
 ! 
 ! output control and other misc. property
-! 
-GFAC 1.0   ! Gas Reaction Rate Multiplier""")
+!""")
+        for species in sensitivity:
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+
+        input_stream+=("""
+EPSR 0.01   ! Threshold for Rate of Production
+EPSS 0.001   ! Threshold for Species Sensitivity
+EPST 0.001   ! Threshold for Temperature Sensitivity
+GFAC 1.0   ! Gas Reaction Rate Multiplier
+PRNT 1   ! Print Level Control
+SIZE 10000000   ! Solution Data Block Size (bytes)""")
+
+        for species in rop:
+            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
                                             
         input_stream+=('\nEND')
         
@@ -457,7 +477,7 @@ GFAC 1.0   ! Gas Reaction Rate Multiplier""")
     def writeInputJSR(self,problemType, reactants, tau,endtime, volume, 
                            temperature  = None, pressure  = None,
                            Continuations=False, typeContinuation = None, Tlist = [], Plist = [],                           
-                           temperatureProfile = None, pressureProfile = None):
+                           temperatureProfile = None, pressureProfile = None, sensitivity=[], rop=[]):
     
         """
         Write input file for JSR
@@ -540,13 +560,25 @@ ADAP   ! Save Additional Adaptive Points
 """)    
         input_stream+=('TIME {0:g}   ! End Time (sec) \n'.format(endtime))    
     
-        # output control and other misc. property
         input_stream+=("""
 ! 
 ! output control and other misc. property
-! 
+
+!""")
+
+        for species in sensitivity:
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+
+        input_stream+=("""
+EPSR 0.01   ! Threshold for Rate of Production
+EPSS 0.001   ! Threshold for Species Sensitivity
+EPST 0.001   ! Threshold for Temperature Sensitivity
 GFAC 1.0   ! Gas Reaction Rate Multiplier
-""")
+PRNT 1   ! Print Level Control
+SIZE 10000000   ! Solution Data Block Size (bytes)""")
+
+        for species in rop:
+            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
                                             
         if Continuations:
             if numpy.array(Tlist).size:                
