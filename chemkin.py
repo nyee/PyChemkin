@@ -299,10 +299,11 @@ TIME {0:g}                 ! End Time (sec)""".format(endTime))
         input_stream+=("""
 ! 
 ! output control and other misc. property
-!""")
+!
+""")
 
         for species in sensitivity:
-            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity\n'.format(species)) 
 
         input_stream+=("""
 EPSR 0.01   ! Threshold for Rate of Production
@@ -310,10 +311,11 @@ EPSS 0.001   ! Threshold for Species Sensitivity
 EPST 0.001   ! Threshold for Temperature Sensitivity
 GFAC 1.0   ! Gas Reaction Rate Multiplier
 PRNT 1   ! Print Level Control
-SIZE 10000000   ! Solution Data Block Size (bytes)""")
+SIZE 10000000   ! Solution Data Block Size (bytes)
+""")
 
         for species in rop:
-            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
+            input_stream+=('ROP {0}    ! Rate of Production\n'.format(species))
               
         if Continuations:
             if numpy.array(Tlist).size:                
@@ -455,9 +457,10 @@ TSTP 1.0   ! Initial Integration Step (cm""")
         input_stream+=("""
 ! 
 ! output control and other misc. property
-!""")
+!
+""")
         for species in sensitivity:
-            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity\n'.format(species)) 
 
         input_stream+=("""
 EPSR 0.01   ! Threshold for Rate of Production
@@ -465,10 +468,11 @@ EPSS 0.001   ! Threshold for Species Sensitivity
 EPST 0.001   ! Threshold for Temperature Sensitivity
 GFAC 1.0   ! Gas Reaction Rate Multiplier
 PRNT 1   ! Print Level Control
-SIZE 10000000   ! Solution Data Block Size (bytes)""")
+SIZE 10000000   ! Solution Data Block Size (bytes)
+""")
 
         for species in rop:
-            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
+            input_stream+=('ROP {0}    ! Rate of Production\n'.format(species))
                                             
         input_stream+=('\nEND')
         
@@ -563,11 +567,11 @@ ADAP   ! Save Additional Adaptive Points
         input_stream+=("""
 ! 
 ! output control and other misc. property
-
-!""")
+!
+""")
 
         for species in sensitivity:
-            input_stream+=('ASEN {0}    ! A-factor Sensitivity'.format(species)) 
+            input_stream+=('ASEN {0}    ! A-factor Sensitivity\n'.format(species)) 
 
         input_stream+=("""
 EPSR 0.01   ! Threshold for Rate of Production
@@ -575,10 +579,11 @@ EPSS 0.001   ! Threshold for Species Sensitivity
 EPST 0.001   ! Threshold for Temperature Sensitivity
 GFAC 1.0   ! Gas Reaction Rate Multiplier
 PRNT 1   ! Print Level Control
-SIZE 10000000   ! Solution Data Block Size (bytes)""")
+SIZE 10000000   ! Solution Data Block Size (bytes)
+""")
 
         for species in rop:
-            input_stream+=('ROP {0}    ! Rate of Production'.format(species))
+            input_stream+=('ROP {0}    ! Rate of Production\n'.format(species))
                                             
         if Continuations:
             if numpy.array(Tlist).size:                
