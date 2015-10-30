@@ -55,4 +55,4 @@ PYTHONPATH=PyChemkin_directory:$PYTHONPATH
 
 Then one can import the chemkin module inside any standard python script::
 
-import chemkin
+import pychemkin.chemkin as chemkin
