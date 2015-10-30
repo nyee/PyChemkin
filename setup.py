@@ -22,6 +22,7 @@ if __name__ == '__main__':
         from distutils.extension import Extension
 
     modules = ['pychemkin.chemkin', 
+               'pychemkin.flux',
                'pychemkin.ignition'
                'pychemkin.sensitivity'
                ]
