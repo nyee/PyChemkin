@@ -1,3 +1,6 @@
+/PyChemkin.egg-info/*
+/build/*
+/dist/*
 /.settings/org.eclipse.ltk.core.refactoring.prefs
 /.project
 /.pydevproject
