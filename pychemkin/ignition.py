@@ -201,11 +201,11 @@ def runIgnitionReactionSensitivity(runChemkinJob, inputFile, dictionaryFile):
     worksheet = csv.writer(file('ignition_rxn_sensitivity.csv', 'w'))
     worksheet.writerow(['Index', 'Reaction', 'd[ln k]','tau_high','tau_low','d[ln tau]/d[ln k]'])
     
-    logging.info('Running reaction sensitivity analysis using finite differences...')
+    print 'Running reaction sensitivity analysis using finite differences...'
     for index, reaction in enumerate(reactionList):
         rxn_index = index + 1
         rxn_string = reaction.toChemkin(kinetics = False)
-        logging.info('At reaction {0} of {1}. {2}'.format(rxn_index, num_reactions, rxn_string))
+        print 'At reaction {0} of {1}. {2}'.format(rxn_index, num_reactions, rxn_string)
                 
         reaction.kinetics.changeRate(factor_high)
         saveChemkinFile('chem_temp.inp', speciesList, reactionList, verbose = False)
@@ -246,11 +246,11 @@ def runIgnitionThermoSensitivity(runChemkinJob, inputFile, dictionaryFile):
     worksheet = csv.writer(file('ignition_thermo_sensitivity.csv', 'w'))
     worksheet.writerow(['Species', 'd[del H] (kcal/mol)', 'tau_high', 'tau_low', 'd[ln tau]/d[del H]'])
     
-    logging.info('Running thermo sensitivity analysis using finite differences...')
+    print 'Running thermo sensitivity analysis using finite differences...'
     for index, species in enumerate(speciesList):
         species_index = index + 1
         species_string = getSpeciesIdentifier(species)
-        logging.info('At species {0} of {1}. {2}'.format(species_index, num_species, species_string))
+        print 'At species {0} of {1}. {2}'.format(species_index, num_species, species_string)
         
         species.thermo.changeBaseEnthalpy(deltaH)
         saveChemkinFile('chem_temp.inp', speciesList, reactionList, verbose = False)

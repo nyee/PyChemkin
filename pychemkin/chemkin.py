@@ -10,7 +10,6 @@ import os.path
 import subprocess
 import csv
 import numpy
-import logging
 import sys
 
 ################################################################################
@@ -30,28 +29,6 @@ CHEMKIN_SCRIPT_PREAMBLE = """#!/bin/sh -v
 
 """.format(os.path.join(CHEMKIN_DIR, 'bin', 'chemkinpro_setup.ksh'))
 
-################################################################################
-
-# Set logging parameters
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-# Create console handler and set level to debug; send everything to stdout
-# rather than stderr
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.INFO)
-
-logging.addLevelName(logging.CRITICAL, 'Critical: ')
-logging.addLevelName(logging.ERROR, 'Error: ')
-logging.addLevelName(logging.WARNING, 'Warning: ')
-logging.addLevelName(logging.INFO, '')
-
-formatter = logging.Formatter('%(levelname)s%(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-
-################################################################################
 
 class ChemkinJob(object):
     """
