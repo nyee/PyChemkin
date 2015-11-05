@@ -73,6 +73,10 @@ TempIndex = 2
 ROPData350 = ROPData['PDD'][TempIndex]
 ROPData350.setFluxPercentages()
 x = 10*3600   # 10 hours
-ROPData350.sortTopRopReactions(x=x, numReactions=10)
+ROPData350.sortTopRopReactions(x=x, numReactions=10, speciesList=speciesList)
 
 ROPData350.sortTopRopSpecies(x=x, numSpecies=10)
+
+#from pychemkin import *
+#print renderSpecies(speciesList[3])
+#print renderReaction(reactionList[4],speciesList)
