@@ -175,7 +175,7 @@ class SpeciesROP(object):
                     fluxPercentage[i] = rxnRop.data[i]/totalPositiveRate[i]*100
             rxnRop.fluxPercentage = fluxPercentage
             
-    def sortTopRopReactions(self, x = 0, numReactions = 5):
+    def sortTopRopReactions(self, x = 0, numReactions = 5, speciesList=[]):
         """
         Sort by the largest absolute flux percentages at a given value for the x variable (either time or distance).  
         The default number of reaction ROPs returned in either direction is set by numReactions
@@ -208,7 +208,10 @@ class SpeciesROP(object):
         
         for i, rxnRop in enumerate(sortedPositiveROP[:numReactions]):
             print '{num}. {rxnString}\t Actual flux = {flux}\t % of Total Positive ROP = {fluxpercent}'.format(num=i+1, rxnString=rxnRop.rxnString, flux=rxnRop.data[idx], fluxpercent=rxnRop.fluxPercentage[idx])
-
+        
+        reactionList = [rxnRop.rxnObject for rxnRop in sortedNegativeROP[:numReactions]]
+        saveFluxAnalysisHTML('fluxAnalysis.html', idx, self, negativeROPList = sortedNegativeROP[:numReactions], positiveROPList = sortedPositiveROP[:numReactions], speciesList=speciesList)
+        
     def sortTopRopSpecies(self, x = 0, numSpecies = 5):
         """
         Sort species by the largest absolute flux percentages at a given value for the x variable (either time or distance).  
@@ -276,7 +279,6 @@ class SpeciesROP(object):
             sortedRxns = sorted(speciesTuple[1][1], key=lambda x: abs(x.data[idx]), reverse=True)  # Sort the rxns the species came from 
             for rxnRop in sortedRxns[:5]:
                 print '\t{rxnString}\t Actual flux = {flux}\t % Contribution = {percent}'.format(rxnString=rxnRop.rxnString, flux=rxnRop.data[idx], percent=abs(rxnRop.data[idx]/speciesTuple[1][0])*100)
-            
         print '\nTotal Positive ROP = {0}'.format(self.totalPositiveRate[idx])
         print '\nPrinting the top species being depleted (positive flux to form parent species {0}) ...'.format(self.species)
 
@@ -317,4 +319,101 @@ class FluxDiagram(object):
     def __init__(self, initialSpecies='', tolerance=0.1):
         self.initialSpecies = ''
         self.tolerance = tolerance
-        
+    
+################################################################################
+
+def saveFluxAnalysisHTML(path, idx, speciesROP, negativeROPList = [], positiveROPList = [], speciesList=[]):
+    """
+    Save the flux analysis for a given species to HTML.
+    """
+    import os
+    from rmgpy.molecule.draw import MoleculeDrawer
+    from rmgpy.chemkin import getSpeciesIdentifier
+    from .html import renderSpecies, renderReactionROP, STYLE_HEADER
+    
+    try:
+        import jinja2
+    except ImportError:
+        print "jinja2 package not found; HTML output will not be saved."
+        return
+
+    path = os.path.abspath(path)
+    dirname = os.path.dirname(path)
+    
+            
+    
+    if not os.path.isdir(os.path.join(dirname,'species')):
+        os.makedirs(os.path.join(dirname,'species'))
+
+    for spec in speciesList:
+        # Draw molecules 
+        speciesLabel = getSpeciesIdentifier(spec)
+        fstr = os.path.join(dirname, 'species', '{0}.png'.format(speciesLabel))
+        if not os.path.exists(fstr):
+            try:
+                MoleculeDrawer().draw(spec.molecule[0], 'png', fstr)
+            except IndexError:
+                raise Exception("{0} species could not be drawn because it did not contain a molecular structure. Please recheck your files.".format(speciesLabel))
+            
+    #title = 'Flux Analysis for Species {label} at x = {x}'.format(label=getSpeciesIdentifier(species), x=speciesROP.xvarData[idx])
+    #self.totalNegativeRate[idx]
+    #print '{num}. {rxnString}\t Actual flux = {flux}\t % of Total Positive ROP = {fluxpercent}'.format(num=i+1, rxnString=rxnRop.rxnString, flux=rxnRop.data[idx], fluxpercent=rxnRop.fluxPercentage[idx])
+    
+    environment = jinja2.Environment()    
+    environment.filters['renderSpecies'] = renderSpecies
+    environment.filters['renderReactionROP'] = renderReactionROP
+    environment.filters['getSpeciesIdentifier'] = getSpeciesIdentifier
+    
+    # Make HTML file
+    template = environment.from_string(
+"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Flux Analysis for Species {{speciesROP.speciesObject|getSpeciesIdentifier}} at x = {{speciesROP.xvarData[idx]}}</title>
+{{style}}
+</head>
+<body>
+<h1>Flux Analysis for Species {{speciesROP.speciesObject|getSpeciesIdentifier}} at x = {{speciesROP.xvarData[idx]}}</h1>
+<h2>Species</h2>
+
+<table class="speciesList">
+<tr><th>Label</th><th>Structure</th><th>SMILES</th><th>Thermo</th>
+{{speciesROP.speciesObject|renderSpecies(thermo=True)}}
+</table>
+<hr>
+
+<h3>Net ROP = {{speciesROP.totalRopData[idx]}}</h3>
+
+<hr size=3>
+<h2>Top Negative Flux Reactions Depleting Species {{speciesROP.speciesObject|getSpeciesIdentifier}}</h2>
+<h3>Total Negative ROP = {{speciesROP.totalNegativeRate[idx]}}</h3>
+
+<table class="reactionList" hide_comment hide_kinetics hide_chemkin">
+{% for rxnROP in negativeROPList %}
+{{rxnROP|renderReactionROP(speciesList, showROP=True, idx=idx)}}
+{% endfor %}
+</table>
+
+<hr size=3>
+<h2>Top Positive Flux Reactions Accumulating Species {{speciesROP.speciesObject|getSpeciesIdentifier}}</h2>
+<h3>Total Positive ROP = {{speciesROP.totalPositiveRate[idx]}}</h3>
+
+<table class="reactionList" hide_comment hide_kinetics hide_chemkin">
+{% for rxnROP in positiveROPList %}
+{{rxnROP|renderReactionROP(speciesList, showROP=True, idx=idx)}}
+{% endfor %}
+</table>
+
+</body>
+</html>
+""")
+
+    f = open(path, 'w')
+    f.write(template.render(style=STYLE_HEADER, 
+                            idx = idx, 
+                            speciesROP = speciesROP, 
+                            negativeROPList = negativeROPList, 
+                            positiveROPList = positiveROPList, 
+                            speciesList=speciesList))
+    f.close()
