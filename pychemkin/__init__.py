@@ -7,6 +7,7 @@ from .chemkin import *
 from .flux import *
 from .ignition import *
 from .sensitivity import *
+from .html import *
 
 def get_include():
     """

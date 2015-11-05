@@ -23,8 +23,9 @@ if __name__ == '__main__':
 
     modules = ['pychemkin.chemkin', 
                'pychemkin.flux',
-               'pychemkin.ignition'
-               'pychemkin.sensitivity'
+               'pychemkin.ignition',
+               'pychemkin.sensitivity',
+               'pychemkin.html',
                ]
 
     # Read the version number
