@@ -17,10 +17,15 @@ import sys
 # The directory in which Chemkin is installed
 chemkin_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'chemkin_path'))
 
+CHEMKIN_DIR = ''
 if os.path.exists(chemkin_path):
     with open(chemkin_path, 'r') as f:
-        CHEMKIN_DIR = os.path.abspath(f.readline())
-        
+        path = f.readline()
+        if not path:
+            print "Warning: CHEMKIN_DIR has not been set properly.  Please do so in the text file 'chemkin_path'"
+        else:
+            CHEMKIN_DIR = os.path.abspath(path)
+    
 # The preamble to each Chemkin execution shell script
 CHEMKIN_SCRIPT_PREAMBLE = """#!/bin/sh -v
 
