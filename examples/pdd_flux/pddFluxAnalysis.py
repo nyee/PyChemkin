@@ -14,7 +14,7 @@ job_pdd = ChemkinJob(
     chemFile = '',
     tempDir = '.',
 )
-
+spec ={'PDD' : "PDD(1)"}
 
 #Temperatures
 Tlist = [250, 325, 350, 375, 400, 425]  # C
